@@ -1,19 +1,16 @@
 import { useState } from "react";
+import {Assistant} from "./assistants/googleai.js";
 import { Chat } from "./components/Chat/Chat.jsx";
 import Controls from "./components/Controls/Controls.jsx";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 import styles from "./App.module.css";
 
-const googleai = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_API_KEY);
-const gemini = googleai.getGenerativeModel({
-  model: "gemini-1.5-flash",
-});
 
-const chat = gemini.startChat({
-  history: [],
-});
+
+
 function App() {
+  const assistant = new Assistant();
   const [messages, setMessages] = useState([]);
 
   function addMessage(message) {
@@ -24,8 +21,9 @@ function App() {
    addMessage ({ role: "user", content });
 
     try {
-      const result =await chat.sendMessage(content);
-       addMessage({ role: "assistant", content:result.response.text() });
+     const result = await assistant.chat(content);
+       addMessage({ role: "assistant", content:result });
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       addMessage({ role: "system", content: "An error occurred while sending the message." });
     }
